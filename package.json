@@ -2,7 +2,9 @@
   "name": "@twitch-vods-stats/source",
   "version": "0.0.0",
   "license": "MIT",
-  "scripts": {},
+  "scripts": {
+    "build": "nx build vod-stats"
+  },
   "private": true,
   "dependencies": {
     "@analogjs/content": "^1.13.1",
