@@ -1,0 +1,57 @@
+{
+  "name": "vod-stats",
+  "$schema": "../node_modules/nx/schemas/project-schema.json",
+  "projectType": "application",
+  "targets": {
+    "build": {
+      "executor": "@analogjs/platform:vite",
+      "defaultConfiguration": "production",
+      "configurations": {
+        "development": {
+          "mode": "development"
+        },
+        "production": {
+          "sourcemap": false,
+          "mode": "production"
+        }
+      },
+      "outputs": [
+        "{options.outputPath}",
+        "{workspaceRoot}/dist/vod-stats/.nitro",
+        "{workspaceRoot}/dist/vod-stats/ssr",
+        "{workspaceRoot}/dist/vod-stats/analog"
+      ],
+      "options": {
+        "main": "vod-stats/src/main.ts",
+        "configFile": "vod-stats/vite.config.ts",
+        "outputPath": "dist/vod-stats/client",
+        "tsConfig": "vod-stats/tsconfig.app.json"
+      }
+    },
+    "serve": {
+      "executor": "@analogjs/platform:vite-dev-server",
+      "defaultConfiguration": "development",
+      "options": {
+        "buildTarget": "vod-stats:build",
+        "port": 4200
+      },
+      "configurations": {
+        "development": {
+          "buildTarget": "vod-stats:build:development",
+          "hmr": true
+        },
+        "production": {
+          "buildTarget": "vod-stats:build:production"
+        }
+      }
+    },
+    "test": {
+      "executor": "@analogjs/vitest-angular:test",
+      "outputs": [
+        "{projectRoot}/coverage"
+      ]
+    }
+  },
+  "tags": [],
+  "sourceRoot": "./vod-stats/src"
+}
