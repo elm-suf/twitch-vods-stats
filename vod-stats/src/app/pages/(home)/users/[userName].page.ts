@@ -1,7 +1,7 @@
 import { Component, Input } from "@angular/core";
 
-import { Observable, Subject } from "rxjs";
-import { injectTrpcClient } from "../../trpc-client";
+import { Subject } from "rxjs";
+import { injectTrpcClient } from "../../../../trpc-client";
 
 @Component({
   selector: "vod-stats-users",
@@ -9,7 +9,7 @@ import { injectTrpcClient } from "../../trpc-client";
   host: {
     class: "block p-4 min-h-screen",
   },
-  template: ` USERS PAGE {{ userName }} - userName `,
+  template: ` USER PAGE : {{ userName }} `,
 })
 export default class HomeComponent {
   @Input() userName!: string;
