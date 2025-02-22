@@ -1,8 +1,8 @@
-import { router } from '../trpc';
-import { noteRouter } from './notes';
+import { router } from "../trpc";
+import { twitchRouter } from "./twitch";
 
 export const appRouter = router({
-  note: noteRouter,
+  twitch: twitchRouter,
 });
 // export type definition of API
 export type AppRouter = typeof appRouter;
