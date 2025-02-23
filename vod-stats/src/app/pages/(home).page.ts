@@ -1,13 +1,13 @@
-import { Component } from "@angular/core";
-
 import { injectRouter } from "@analogjs/router";
-import { AsyncPipe, NgFor, NgIf } from "@angular/common";
+import { CommonModule } from "@angular/common";
+import { Component, inject } from "@angular/core";
 import { FormsModule } from "@angular/forms";
-import { RouterLink, RouterOutlet } from "@angular/router";
+import { ActivatedRoute, RouterOutlet } from "@angular/router";
+import { map } from "rxjs";
 
 @Component({
   selector: "vod-stats-home",
-  imports: [AsyncPipe, NgFor, NgIf, FormsModule, RouterLink, RouterOutlet],
+  imports: [CommonModule, FormsModule, RouterOutlet],
   host: {
     class: "block p-4 min-h-screen",
   },
@@ -31,6 +31,7 @@ import { RouterLink, RouterOutlet } from "@angular/router";
         name="searchInput"
         class="flex-1 bg-transparent outline-none text-lg"
         aria-label="Search Twitch channels"
+        [value]="(searchTerm$ | async )?? ''"
       />
       <button
         type="submit"
@@ -45,9 +46,13 @@ import { RouterLink, RouterOutlet } from "@angular/router";
   </main> `,
 })
 export default class HomeComponent {
+  readonly searchTerm$ = inject(ActivatedRoute).queryParams.pipe(
+    map((params) => params["searchTerm"])
+  );
+
   private router = injectRouter();
   search(term: string) {
-    console.debug("Searching for:", term);
+    console.debug("redirect-to: /search with param", term);
     this.router.navigate(["/search"], { queryParams: { searchTerm: term } });
   }
 }
