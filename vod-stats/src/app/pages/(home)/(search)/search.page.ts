@@ -1,23 +1,24 @@
-import { Component, Input } from "@angular/core";
+import { Component } from "@angular/core";
 
-import { AsyncPipe, NgFor, NgIf } from "@angular/common";
+import { injectLoad } from "@analogjs/router";
+import { CommonModule } from "@angular/common";
+import { toSignal } from "@angular/core/rxjs-interop";
 import { FormsModule } from "@angular/forms";
-import { RouterLink } from "@angular/router";
-import { Observable } from "rxjs";
-import { SearchResponse } from "../../../../server/trpc/routers/twitch";
-import { injectTrpcClient } from "../../../../trpc-client";
 
+import { RouterLink } from "@angular/router";
+import { load } from "./search.server";
 
 @Component({
   selector: "vod-stats-users",
-  imports: [AsyncPipe, NgFor, NgIf, FormsModule, RouterLink],
+  imports: [CommonModule, FormsModule, RouterLink],
   host: {
-    class: "block p-4 min-h-screen",
+    class: "block p-4 min-h-full",
   },
   template: `
-    <div *ngIf="searchResults$ | async as results" class="mt-8">
+    @if (data().users; as users) {
+    <div class="mt-8">
       <h3
-        *ngIf="results.users.length > 0"
+        *ngIf="users.length > 0"
         class="text-xl font-semibold"
         role="heading"
         aria-level="2"
@@ -25,11 +26,11 @@ import { injectTrpcClient } from "../../../../trpc-client";
         Search Results
       </h3>
       <ul
-        *ngIf="results.users.length > 0"
+        *ngIf="users.length > 0"
         class="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-4"
       >
+        @for (user of users; track $index) {
         <li
-          *ngFor="let user of results.users"
           class="cursor-pointer group flex flex-col items-center bg-white p-4 rounded-xl shadow-md hover:shadow-lg transition"
           role="listitem"
           tabindex="0"
@@ -51,28 +52,16 @@ import { injectTrpcClient } from "../../../../trpc-client";
             {{ user.name }}
           </span>
         </li>
+        }
       </ul>
 
-      <p
-        *ngIf="results.users.length === 0"
-        class="mt-6 text-gray-500 text-center"
-      >
+      <p *ngIf="users.length === 0" class="mt-6 text-gray-500 text-center">
         No results found.
       </p>
     </div>
+    }
   `,
 })
 export default class HomeComponent {
-  private _searchTerm!: string;
-  public get searchTerm(): string {
-    return this._searchTerm;
-  }
-  @Input()
-  public set searchTerm(value: string) {
-    this._searchTerm = value;
-    this.searchResults$ = this._trpc.twitch.search.query({ term: value });
-  }
-  private _trpc = injectTrpcClient();
-
-  searchResults$?: Observable<SearchResponse>;
+  data = toSignal(injectLoad<typeof load>(), { requireSync: true });
 }

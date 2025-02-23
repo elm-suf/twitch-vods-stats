@@ -7,7 +7,7 @@ import { injectTrpcClient } from "../../../../trpc-client";
   selector: "vod-stats-users",
   imports: [],
   host: {
-    class: "block p-4 min-h-screen",
+    class: "block p-4 min-h-full",
   },
   template: ` USER PAGE : {{ userName }} `,
 })
