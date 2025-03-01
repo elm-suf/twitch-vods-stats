@@ -11,6 +11,8 @@ export async function getUserByUsername(userName: string) {
   return mapUser(data);
 }
 
+export type User = ReturnType<typeof mapUser>;
+
 function mapUser(data: import("@twurple/api").HelixUser | null) {
   if (!data) {
     return null;

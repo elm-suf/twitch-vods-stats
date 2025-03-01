@@ -1,7 +1,9 @@
 import { HelixPaginatedResult, HelixVideo } from "@twurple/api";
 import { TwitchApiSingleton } from "../core/twitch-singleton";
 
-export async function getVideosByChannelId(userName?: string) {
+export async function getVideosByChannelId(
+  userName?: string
+): Promise<{ data: VodItem[]; pagination: string | null }> {
   if (!userName) {
     return { data: [], pagination: null };
   }
@@ -9,8 +11,10 @@ export async function getVideosByChannelId(userName?: string) {
 
   const data = await apiClient.videos.getVideosByUser(userName);
 
-  return { data: mapVods(data), pagination: data.cursor };
+  return { data: mapVods(data), pagination: data.cursor ?? null };
 }
+
+export type VodItem = ReturnType<typeof mapVods>[0];
 
 export function mapVods(data: HelixPaginatedResult<HelixVideo>) {
   return data.data.map((video) => ({
@@ -23,5 +27,6 @@ export function mapVods(data: HelixPaginatedResult<HelixVideo>) {
     thumbnailUrl: video.getThumbnailUrl(320, 180),
     creationDate: video.creationDate,
     streamId: video.streamId,
+    duration: video.duration,
   }));
 }
