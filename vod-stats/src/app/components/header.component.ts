@@ -1,14 +1,15 @@
 import { Component, EventEmitter, Output } from "@angular/core";
 import { FormsModule } from "@angular/forms";
+import { RouterLink } from "@angular/router";
 
 @Component({
   selector: "app-header",
-  imports: [FormsModule],
+  imports: [FormsModule, RouterLink],
   template: ` <header
     class="flex items-center justify-between whitespace-nowrap border-b border-solid border-b-[#2E2E2E] px-10 py-3"
   >
-    <div class="flex items-center gap-4 text-[#FFFFFF]">
-      <div class="size-4">
+    <div class="flex items-center gap-4 text-[#FFFFFF] cursor-pointer group" [routerLink]="['/']" >
+      <div class="size-4 group-hover:text-[#CCCCCC]">
         <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path
             fill-rule="evenodd"
@@ -19,7 +20,7 @@ import { FormsModule } from "@angular/forms";
         </svg>
       </div>
       <h2
-        class="text-[#FFFFFF] text-lg font-bold leading-tight tracking-[-0.015em]"
+        class="text-[#FFFFFF] text-lg font-bold leading-tight tracking-[-0.015em] group-hover:text-[#CCCCCC]"
       >
         Streamr
       </h2>
@@ -28,10 +29,10 @@ import { FormsModule } from "@angular/forms";
       (ngSubmit)="search(searchInput.value)"
       class="flex flex-1 justify-end gap-8"
     >
-      <label class="flex flex-col min-w-40 !h-10 max-w-64">
+      <label class="flex flex-col min-w-40 !h-10 max-w-64 group">
         <div class="flex w-full flex-1 items-stretch rounded-xl h-full">
           <div
-            class="text-[#999999] flex border-none bg-[#2E2E2E] items-center justify-center pl-4 rounded-l-xl border-r-0"
+            class="text-[#999999] flex border-none bg-[#2E2E2E] items-center justify-center pl-4 rounded-l-xl border-r-0 group-hover:text-[#CCCCCC]"
             data-icon="MagnifyingGlass"
             data-size="24px"
             data-weight="regular"
@@ -51,7 +52,7 @@ import { FormsModule } from "@angular/forms";
           <input
             #searchInput
             placeholder="Search"
-            class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-xl text-[#FFFFFF] focus:outline-0 focus:ring-0 border-none bg-[#2E2E2E] focus:border-none h-full placeholder:text-[#999999] px-4 rounded-l-none border-l-0 pl-2 text-base font-normal leading-normal"
+            class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-xl text-[#FFFFFF] focus:outline-0 focus:ring-0 border-none bg-[#2E2E2E] focus:border-none h-full placeholder:text-[#999999] px-4 rounded-l-none border-l-0 pl-2 text-base font-normal leading-normal group-hover:text-[#CCCCCC]"
             value=""
           />
         </div>
