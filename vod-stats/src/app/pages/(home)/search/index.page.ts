@@ -6,7 +6,7 @@ import { toSignal } from "@angular/core/rxjs-interop";
 import { FormsModule } from "@angular/forms";
 
 import { RouterLink } from "@angular/router";
-import { load } from "./search.server";
+import { load } from "./index.server";
 
 @Component({
   selector: "vod-stats-users",
