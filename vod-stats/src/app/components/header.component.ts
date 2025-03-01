@@ -6,7 +6,7 @@ import { RouterLink } from "@angular/router";
   selector: "app-header",
   imports: [FormsModule, RouterLink],
   template: ` <header
-    class="flex items-center justify-between whitespace-nowrap border-b border-solid border-b-[#2E2E2E] px-10 py-3"
+    class="flex flex-row items-center justify-between whitespace-nowrap border-b border-solid border-b-[#2E2E2E] px-4 md:px-10 py-3 gap-4"
   >
     <div class="flex items-center gap-4 text-[#FFFFFF] cursor-pointer group" [routerLink]="['/']" >
       <div class="size-4 group-hover:text-[#CCCCCC]">
@@ -20,16 +20,16 @@ import { RouterLink } from "@angular/router";
         </svg>
       </div>
       <h2
-        class="text-[#FFFFFF] text-lg font-bold leading-tight tracking-[-0.015em] group-hover:text-[#CCCCCC]"
+        class="text-[#FFFFFF] text-lg font-bold leading-tight tracking-[-0.015em] group-hover:text-[#CCCCCC] hidden sm:block"
       >
         Streamr
       </h2>
     </div>
     <form
       (ngSubmit)="search(searchInput.value)"
-      class="flex flex-1 justify-end gap-8"
+      class="flex flex-1 justify-end gap-4 md:gap-8"
     >
-      <label class="flex flex-col min-w-40 !h-10 max-w-64 group">
+      <label class="flex flex-col min-w-40 !h-10 max-w-full md:max-w-64 group w-full md:w-auto">
         <div class="flex w-full flex-1 items-stretch rounded-xl h-full">
           <div
             class="text-[#999999] flex border-none bg-[#2E2E2E] items-center justify-center pl-4 rounded-l-xl border-r-0 group-hover:text-[#CCCCCC]"
