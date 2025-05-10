@@ -1,4 +1,10 @@
-import { VodChatByVodIdGQL } from "./models";
+import { TwitchApiSingleton } from "../../core/twitch-singleton";
+import {
+  IVodChat,
+  IVodChatMessage,
+  VodChatByVodIdGQL,
+  VodMetadata,
+} from "./models";
 
 const baseUrl = "https://gql.twitch.tv/gql";
 const headers = { "Client-ID": "kd1unb4b3q4t58fwlpcbzcbnm76a8fp" };
@@ -10,6 +16,7 @@ const firstQuery = (videoId: string, videoStart: number): string =>
       videoID: videoId,
       contentOffsetSeconds: videoStart,
     },
+
     extensions: {
       persistedQuery: {
         version: 1,
@@ -36,25 +43,56 @@ const cursorQuery = (videoId: string, cursor: string): string => {
   });
 };
 
-export async function getVodChatByVodId(videoId: string): Promise<string[]> {
-  const firstQueryResponse = await fetch(baseUrl, {
-    method: "POST",
-    headers: headers,
-    body: firstQuery(videoId, 0),
-  });
+export async function getVodChatByVodId(videoId: string): Promise<IVodChat> {
+  const apiClient = TwitchApiSingleton.getInstance();
+  const [videoMetadata, firstQueryDataResponse] = await Promise.all([
+    apiClient.videos.getVideoById(videoId),
+    fetch(baseUrl, {
+      method: "POST",
+      headers: headers,
+      body: firstQuery(videoId, 0),
+    }),
+  ]);
+
+  if (!videoMetadata) {
+    throw new Error("Invalid video metadata response");
+  }
 
   const firstQueryData: VodChatByVodIdGQL.RawResponse =
-    await firstQueryResponse.json();
+    await firstQueryDataResponse.json();
+  if (!firstQueryData?.data?.video?.comments?.edges?.length) {
+    throw new Error("Invalid chat data response");
+  }
+
+  const res: IVodChat = {
+    meta: {
+      id: videoMetadata.id,
+      title: videoMetadata.title,
+      thumbnailUrl: videoMetadata.thumbnailUrl,
+      creationDate: videoMetadata.creationDate,
+      views: videoMetadata.views,
+      publishDate: videoMetadata.publishDate,
+      durationInSeconds: videoMetadata.durationInSeconds,
+      url: videoMetadata.url,
+    },
+    messages: [],
+  };
+
   let cursor = firstQueryData.data.video.comments.edges[0].cursor;
+  const mapEdge = (edge: VodChatByVodIdGQL.Edge) => {
+    return {
+      message: edge.node.message.fragments[0].text,
+      time: edge.node.contentOffsetSeconds,
+      user: edge.node.commenter?.displayName ?? "[deleted]",
+    };
+  };
+  const messages: IVodChatMessage[] =
+    firstQueryData.data.video.comments.edges.map<IVodChatMessage>(mapEdge);
 
-  const messages: string[] = firstQueryData.data.video.comments.edges.map(
-    (edge) => edge.node.message.fragments[0].text
-  );
-
-  console.log("firstQueryData-> messages", messages);
   let count = 0;
+
   while (cursor) {
-    console.log('cursor count ', count++, cursor);
+    console.log("cursor count ", count++, cursor);
     const cursorQueryResponse = await fetch(baseUrl, {
       method: "POST",
       headers: headers,
@@ -65,13 +103,8 @@ export async function getVodChatByVodId(videoId: string): Promise<string[]> {
     cursor = cursorQueryData.data.video.comments.pageInfo.hasNextPage
       ? cursorQueryData.data.video.comments.edges[0].cursor
       : "";
-    messages.push(
-      ...cursorQueryData.data.video.comments.edges.map(
-        (edge) => edge.node.message.fragments[0].text
-      )
-    );
+    messages.push(...cursorQueryData.data.video.comments.edges.map(mapEdge));
   }
-  console.log("FINAL-> messages", messages);
-
-  return messages;
+  res.messages = messages;
+  return res;
 }
